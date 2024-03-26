@@ -1,0 +1,16 @@
+# Filebeat configuration file
+
+filebeat.inputs:
+- type: log
+  enabled: true
+  # Change paths and name as needed
+  paths:
+    - /var/log/*.log  # This will monitor all *.log files in the /var/log directory
+
+  fields:
+    logstash: true  # Set this to send data to Logstash
+
+output.logstash:
+  # Change the following to match your Logstash container
+  hosts: ["localhost:5044"]
+
