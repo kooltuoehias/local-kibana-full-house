@@ -27,7 +27,7 @@ services:
       - "5044:5044"
       - "9600:9600"
     volumes:
-      - ./logstash.conf:/usr/share/logstash/config/logstash.conf  # Replace with your logstash.conf path
+      - ./logstash.conf:/usr/share/logstash/config/logstash.conf
     depends_on:
       - elasticsearch
 
@@ -35,12 +35,10 @@ services:
     image: elastic/filebeat:8.13.0
     container_name: filebeat
     volumes:
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml  # Replace with your filebeat.yml path
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml 
+      - ./logs:/var/log/ 
     depends_on:
       - logstash
-
-networks:
-  elk:
 
 volumes:
   elasticsearch-data:

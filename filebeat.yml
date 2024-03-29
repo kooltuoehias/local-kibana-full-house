@@ -12,5 +12,5 @@ filebeat.inputs:
 
 output.logstash:
   # Change the following to match your Logstash container
-  hosts: ["localhost:5044"]
+  hosts: ["logstash:5044"]
 
