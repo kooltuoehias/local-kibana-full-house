@@ -23,6 +23,7 @@ services:
   logstash:
     image: elastic/logstash:8.13.0
     container_name: logstash
+    command: ["bin/logstash", "-f", "/usr/share/logstash/config/logstash.conf"]
     ports:
       - "5044:5044"
       - "9600:9600"
