@@ -21,7 +21,7 @@ func main() {
 	}
 
 	cloudWatchLog := cloudwatchlogs.New(session)
-	// List log streams for a specific group (optional)
+
 	logGroupName := "test-pnc-contract-service"
 	input := &cloudwatchlogs.DescribeLogStreamsInput{
 		Descending:   aws.Bool(true),
@@ -36,23 +36,25 @@ func main() {
 		return
 	}
 
-	if len(describeLogStreamsOutput.LogStreams) == 0 {
-		log.Println("\t No log streams found for this group.")
-	} else {
-		log.Println("\t Log Streams:")
-		for _, logStream := range describeLogStreamsOutput.LogStreams {
-			log.Println("\t\t", *logStream.LogStreamName)
-			getLog := &cloudwatchlogs.GetLogEventsInput{
-				LogGroupName:  aws.String(logGroupName),
-				LogStreamName: aws.String(*logStream.LogStreamName),
-			}
-			events, err := cloudWatchLog.GetLogEvents(getLog)
-			if err != nil {
-				panic("Error fetching log events: " + err.Error())
-			}
-			saveAsLogFile(*logStream.LogStreamName, events.Events)
-		}
+	log.Println("\t Log Streams:")
+	for _, logStream := range describeLogStreamsOutput.LogStreams {
+		saveLogStream(cloudWatchLog, logGroupName, *logStream.LogStreamName)
 	}
+
+}
+
+func saveLogStream(cloudWatchLog *cloudwatchlogs.CloudWatchLogs, logGroupName string, logStreanName string) {
+	log.Println("\t\t", logStreanName)
+
+	getLog := &cloudwatchlogs.GetLogEventsInput{
+		LogGroupName:  aws.String(logGroupName),
+		LogStreamName: aws.String(logStreanName),
+	}
+	events, err := cloudWatchLog.GetLogEvents(getLog)
+	if err != nil {
+		panic("Error fetching log events: " + err.Error())
+	}
+	saveAsLogFile(logStreanName, events.Events)
 }
 
 func saveAsLogFile(logGroupName string, events []*cloudwatchlogs.OutputLogEvent) {
