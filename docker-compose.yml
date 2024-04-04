@@ -1,5 +1,13 @@
 version: '3'
 services:
+
+  downloader:
+    build: ./
+    ports:
+      - "9040:9040"
+    volumes:
+      - ./logs:/app/log/ 
+
   elasticsearch:
     image: elastic/elasticsearch:8.13.0
     container_name: elasticsearch
