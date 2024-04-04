@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Tool Name</title>
+  <link rel="stylesheet" href="style.css">  </head>
+<body>
+  <h1>Cloudwatch Logstream Loader</h1>
+<form action="/save" method="POST">
+  <label for="services">Choose a service:</label>
+  <select name="services" id="services" multiple>
+    <option value="apple-service">apple-service</option>
+    <option value="pineapple-api">pineapple-api</option>
+    <option value="banana-service">banana-contract-service</option>
+    <option value="bread-api">bread-api</option>
+  </select>
+  <br><br>
+  <label for="envs">Choose an env:</label>
+  <select name="envs" id="envs" >
+    <option value="test">test</option>
+    <option value="stage">stage</option>
+    <option value="prod">prod</option>
+  </select>
+  <br><br>
+  <label for="fromDate">From (date and time):</label>
+  <input type="datetime-local" id="fromDate" name="fromDate">
+  <br><br>
+  <label for="toDate">To (date and time):</label>
+  <input type="datetime-local" id="toDate" name="toDate">
+  <br><br>
+  <input type="submit">
+</form>
+
+<br><br>
+<div><textarea name="body" rows="20" cols="80" readonly>{{printf "%s" .Body}}</textarea></div>
+<br><br>
+
+</body>
+</html>

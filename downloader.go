@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -11,32 +12,30 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 )
 
-func main() {
+func Do(env string, service string, buffer *bytes.Buffer) {
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String("eu-west-1")},
 	)
 	if err != nil {
-		fmt.Println("Error creating session:", err)
+		buffer.WriteString(fmt.Sprintln("Error creating session:", err))
 		return
 	}
-
 	cloudWatchLog := cloudwatchlogs.New(session)
-
-	logGroupName := "test-pnc-contract-service"
+	logGroupName := env + "-" + service
 	input := &cloudwatchlogs.DescribeLogStreamsInput{
 		Descending:   aws.Bool(true),
 		LogGroupName: aws.String(logGroupName),
 		Limit:        aws.Int64(5),
 		OrderBy:      aws.String("LastEventTime"),
 	}
+	buffer.WriteString(fmt.Sprintln("Log Streams:", input))
 
 	describeLogStreamsOutput, err := cloudWatchLog.DescribeLogStreams(input)
 	if err != nil {
-		fmt.Println("Error describing log streams:", err)
+		buffer.WriteString(fmt.Sprintln("Error describing log streams:", err))
 		return
 	}
 
-	log.Println("\t Log Streams:")
 	for _, logStream := range describeLogStreamsOutput.LogStreams {
 		saveLogStream(cloudWatchLog, logGroupName, *logStream.LogStreamName)
 	}
@@ -44,7 +43,7 @@ func main() {
 }
 
 func saveLogStream(cloudWatchLog *cloudwatchlogs.CloudWatchLogs, logGroupName string, logStreanName string) {
-	log.Println("\t\t", logStreanName)
+	log.Println("\tShall Save ", logStreanName)
 
 	getLog := &cloudwatchlogs.GetLogEventsInput{
 		LogGroupName:  aws.String(logGroupName),
@@ -68,7 +67,6 @@ func saveAsLogFile(logGroupName string, events []*cloudwatchlogs.OutputLogEvent)
 
 func createLogFileNameFromLogGroupName(logGroupName string) string {
 	splits := strings.Split(logGroupName, "/")
-	fmt.Println(splits)
 	return splits[0] + "_" + splits[1] + "_" + splits[2] + ".log"
 }
 
@@ -76,5 +74,7 @@ func saveAsFile(path string, logs string) {
 	err := os.WriteFile(path, []byte(logs), 0644)
 	if err != nil {
 		log.Fatal(err)
+	} else {
+		log.Println("\tJust Saved ", path)
 	}
 }
